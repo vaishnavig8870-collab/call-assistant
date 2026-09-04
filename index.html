@@ -153,13 +153,13 @@
         <form id="bookingForm">
   
             <label>Your Name</label>
-            <input type="text" placeholder="Enter your name">
+            <input type="text" id="name" placeholder="Enter your name">
 
             <label>Phone Number</label>
-            <input type="tel" placeholder="Enter your phone number">
+            <input type="tel" id="phone"  placeholder="Enter your phone number">
 
             <label>Select Service</label>
-            <select>
+            <select id="service">
                 <option>Select a service</option>
                 <option>Shopping Assistance</option>
                 <option>Railway Station & Airport Assistance</option>
@@ -172,13 +172,13 @@
             </select>
 
             <label>Date</label>
-            <input type="date">
+            <input type="date" id="date">
 
             <label>Location</label>
-            <input type="text" placeholder="Enter your location">
+            <input type="text" id="location" placeholder="Enter your location">
 
             <label>Tell us what you need</label>
-            <textarea
+            <textarea id="request"
                 placeholder="Describe the assistance you need">
             </textarea>
 
@@ -379,9 +379,7 @@
     <a href="https://wa.me/917760411789" class="whatsapp"target="_blank">
     <img src="whatsapp.jpeg"width="32px" height="32px">
     </a>
+<script type="module" src="script.js"></script>
 
-
-    <script src="script.js"></script>
-
-</body>
+    </body>
 </html>
