@@ -16,8 +16,7 @@
         <input type="email" id="email" placeholder="Email" required>
         <br><br>
 
-
-         <input type="tel" id="Phone" placeholder="Phone Number" required>
+        <input type="tel" id="phone" placeholder="Phone Number" required>
         <br><br>
 
         <input type="password" id="password" placeholder="Password" required>
@@ -38,8 +37,7 @@
             const name = document.getElementById("name").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            const password = document.getElementById("phone").value;
-
+            const phone = document.getElementById("phone").value;
 
             try {
 
@@ -47,14 +45,16 @@
                     "https://call-assistant-backend.onrender.com/register",
                     {
                         method: "POST",
+
                         headers: {
                             "Content-Type": "application/json"
                         },
+
                         body: JSON.stringify({
                             name: name,
                             email: email,
                             password: password,
-                            phone:phone
+                            phone: phone
                         })
                     }
                 );
