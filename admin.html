@@ -1,65 +1,55 @@
 <!DOCTYPE html>
-
-<script>
-    const adminToken = localStorage.getItem("adminToken");
-
-    if (!adminToken) {
-        window.location.href = "admin-login.html";
-    }
-</script>
-
 <html>
-
 <head>
-
     <title>Call Assistant - Admin Dashboard</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
+            padding: 15px;
+            background: #f5f7fb;
+            color: #333;
         }
 
         h1 {
             text-align: center;
             color: #333;
+            font-size: 26px;
         }
 
         h2 {
             color: #333;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            margin-top: 20px;
+        /* TOP BUTTONS */
+
+        .top-buttons {
+            text-align: center;
+            margin: 20px 0;
         }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
+        .top-buttons button {
             background: #ff6b00;
             color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
         }
 
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        #message,
-        #userMessage {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
+        .top-buttons button:hover {
+            background: #e85d00;
         }
 
         /* STATISTICS */
@@ -83,27 +73,18 @@
         }
 
         .stat-card strong {
+            display: inline-block;
+            margin: 5px 0;
             font-size: 28px;
             color: #ff6b00;
         }
 
-        /* BUTTONS */
+        /* MESSAGES */
 
-        .main-button {
-            display: block;
-            margin: 15px auto;
-            padding: 11px 22px;
-            background: #ff6b00;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        .main-button:hover {
-            background: #e85d00;
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 17px;
         }
 
         /* SEARCH */
@@ -115,155 +96,120 @@
             margin: 15px auto;
             display: block;
             border: 1px solid #ccc;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
         }
 
-        /* NEW BOOKING FORM */
+        /* TABLE */
 
-        #newBookingBox {
-            display: none;
-            max-width: 600px;
-            margin: 25px auto;
-            padding: 25px;
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 35px;
         }
 
-        #newBookingBox h2 {
-            text-align: center;
-            color: #ff6b00;
-        }
-
-        .booking-input {
+        table {
             width: 100%;
-            box-sizing: border-box;
+            min-width: 900px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
             padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
+            text-align: left;
+            white-space: nowrap;
         }
 
-        .booking-textarea {
-            width: 100%;
-            box-sizing: border-box;
-            height: 90px;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-            resize: vertical;
-        }
-
-        .form-buttons {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .save-button {
-            background: #28a745;
+        th {
+            background: #ff6b00;
             color: white;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
         }
 
-        .cancel-button {
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* STATUS SELECT */
+
+        select {
+            padding: 7px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        /* DELETE BUTTON */
+
+        .delete-button {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 11px 20px;
-            border-radius: 7px;
+            padding: 7px 10px;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
+        }
+
+        .delete-button:hover {
+            background: #bb2d3b;
         }
 
         /* MOBILE */
 
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
 
-    body {
-        padding: 10px;
-    }
+            body {
+                padding: 10px;
+            }
 
-    h1 {
-        font-size: 22px;
-    }
+            h1 {
+                font-size: 22px;
+            }
 
-    h2 {
-        font-size: 20px;
-    }
+            h2 {
+                font-size: 21px;
+            }
 
-    #stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
+            #stats {
+                gap: 10px;
+            }
 
-    .stat-card {
-        width: auto;
-        padding: 15px 8px;
-        font-size: 13px;
-    }
+            .stat-card {
+                width: 135px;
+                padding: 15px 8px;
+                font-size: 14px;
+            }
 
-    .stat-card strong {
-        font-size: 24px;
-    }
+            .stat-card strong {
+                font-size: 24px;
+            }
 
-    .main-button {
-        width: 90%;
-        font-size: 15px;
-    }
+            .top-buttons button {
+                width: 90%;
+                max-width: 300px;
+            }
 
-    .search-box {
-        width: 90%;
-        font-size: 14px;
-    }
+            .search-box {
+                width: 95%;
+            }
 
-    #newBookingBox {
-        width: auto;
-        margin: 20px 5px;
-        padding: 18px;
-    }
+            th,
+            td {
+                padding: 10px;
+            }
+        }
 
-    .booking-input,
-    .booking-textarea {
-        font-size: 14px;
-    }
-
-    table {
-        min-width: 900px;
-    }
-
-    th,
-    td {
-        padding: 8px;
-        font-size: 13px;
-    }
-
-    .save-button,
-    .cancel-button {
-        width: 90%;
-        margin: 5px auto;
-    }
-
-}
     </style>
-
 </head>
-
 
 <body>
 
     <h1>📋 Call Assistant - Admin Dashboard</h1>
-
 
     <!-- STATISTICS -->
 
@@ -314,110 +260,28 @@
 
     <!-- BUTTONS -->
 
-    <button class="main-button" onclick="showNewBooking()">
-        ➕ New Booking
-    </button>
+    <div class="top-buttons">
 
-    <button class="main-button" onclick="logout()">
-        🚪 Logout
-    </button>
+        <button onclick="newBooking()">
+            ➕ New Booking
+        </button>
 
-
-    <!-- NEW BOOKING FORM -->
-
-    <div id="newBookingBox">
-
-        <h2>➕ Create New Booking</h2>
-
-        <form id="newBookingForm">
-
-            <input
-                type="text"
-                id="newName"
-                class="booking-input"
-                placeholder="Customer Name"
-                required
-            >
-
-            <input
-                type="tel"
-                id="newPhone"
-                class="booking-input"
-                placeholder="Phone Number"
-                required
-            >
-
-            <select
-                id="newService"
-                class="booking-input"
-                required
-            >
-                <option value="">Select Service</option>
-                <option value="Shopping Assistance">
-                    Shopping Assistance
-                </option>
-                <option value="Pick Up & Drop">
-                    Pick Up & Drop
-                </option>
-                <option value="Home Assistance">
-                    Home Assistance
-                </option>
-                <option value="Personal Tasks">
-                    Personal Tasks
-                </option>
-            </select>
-
-            <input
-                type="date"
-                id="newDate"
-                class="booking-input"
-                required
-            >
-
-            <input
-                type="text"
-                id="newLocation"
-                class="booking-input"
-                placeholder="Location"
-                required
-            >
-
-            <textarea
-                id="newRequest"
-                class="booking-textarea"
-                placeholder="Customer Request"
-            ></textarea>
-
-            <div class="form-buttons">
-
-                <button
-                    type="submit"
-                    class="save-button"
-                >
-                    💾 Save Booking
-                </button>
-
-                <button
-                    type="button"
-                    class="cancel-button"
-                    onclick="hideNewBooking()"
-                >
-                    ❌ Cancel
-                </button>
-
-            </div>
-
-        </form>
+        <button onclick="logout()">
+            🚪 Logout
+        </button>
 
     </div>
 
 
     <!-- BOOKINGS -->
 
-    <div id="message">
+    <h2 style="text-align:center;">
+        📋 All Bookings
+    </h2>
+
+    <div id="message" class="message">
         Loading bookings...
     </div>
-
 
     <input
         type="text"
@@ -426,8 +290,7 @@
         placeholder="🔎 Search by name, phone, service or location"
     >
 
-
-    <div style="overflow-x:auto;">
+    <div class="table-container">
 
         <table id="bookingTable">
 
@@ -447,20 +310,18 @@
 
             </thead>
 
-            <tbody id="bookingBody">
-            </tbody>
+            <tbody id="bookingBody"></tbody>
 
         </table>
 
     </div>
 
 
-    <!-- REGISTERED USERS -->
+    <!-- USERS -->
 
-    <h2 style="text-align:center; margin-top:40px;">
+    <h2 style="text-align:center;">
         👥 Registered Users
     </h2>
-
 
     <input
         type="text"
@@ -469,13 +330,11 @@
         placeholder="🔎 Search users by name, email or phone"
     >
 
-
-    <div id="userMessage">
+    <div id="userMessage" class="message">
         Loading users...
     </div>
 
-
-    <div style="overflow-x:auto;">
+    <div class="table-container">
 
         <table id="userTable">
 
@@ -490,8 +349,7 @@
 
             </thead>
 
-            <tbody id="userBody">
-            </tbody>
+            <tbody id="userBody"></tbody>
 
         </table>
 
@@ -500,219 +358,175 @@
 
 <script>
 
+const BACKEND =
+    "https://call-assistant-backend.onrender.com";
 
-/* LOGOUT */
+
+/* =========================
+   CHECK ADMIN LOGIN
+========================= */
+
+const adminToken =
+    localStorage.getItem("adminToken");
+
+if (!adminToken) {
+
+    window.location.replace("admin-login.html");
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
 
 function logout() {
 
     localStorage.removeItem("adminToken");
 
-    window.location.href = "admin-login.html";
+    window.location.replace("admin-login.html");
 
 }
 
 
-/* SHOW NEW BOOKING */
+/* =========================
+   NEW BOOKING
+========================= */
 
-function showNewBooking() {
+function newBooking() {
 
-    document.getElementById("newBookingBox").style.display = "block";
-
-    document.getElementById("newBookingBox").scrollIntoView({
-        behavior: "smooth"
-    });
+    window.location.href = "index.html#booking";
 
 }
 
 
-/* HIDE NEW BOOKING */
-
-function hideNewBooking() {
-
-    document.getElementById("newBookingBox").style.display = "none";
-
-}
-
-
-/* CREATE NEW BOOKING */
-
-document.getElementById("newBookingForm").addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
-
-        const name =
-            document.getElementById("newName").value;
-
-        const phone =
-            document.getElementById("newPhone").value;
-
-        const service =
-            document.getElementById("newService").value;
-
-        const date =
-            document.getElementById("newDate").value;
-
-        const location =
-            document.getElementById("newLocation").value;
-
-        const request =
-            document.getElementById("newRequest").value;
-
-
-        try {
-
-            const response = await fetch(
-                "https://call-assistant-backend.onrender.com/bookings",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        name: name,
-                        phone: phone,
-                        service: service,
-                        date: date,
-                        location: location,
-                        request: request
-                    })
-                }
-            );
-
-
-            const data = await response.json();
-
-
-            if (data.success) {
-
-                alert("✅ New booking created successfully!");
-
-                document
-                    .getElementById("newBookingForm")
-                    .reset();
-
-                hideNewBooking();
-
-                loadBookings();
-
-                loadStatistics();
-
-            } else {
-
-                alert(
-                    data.message ||
-                    "Booking could not be created."
-                );
-
-            }
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "❌ Could not connect to server."
-            );
-
-        }
-
-    }
-);
-
-
-/* LOAD BOOKINGS */
+/* =========================
+   LOAD BOOKINGS
+========================= */
 
 async function loadBookings() {
+
+    const message =
+        document.getElementById("message");
+
+    const tableBody =
+        document.getElementById("bookingBody");
+
+    message.innerText =
+        "Loading bookings...";
+
+    tableBody.innerHTML = "";
 
     try {
 
         const response = await fetch(
-            "https://call-assistant-backend.onrender.com/bookings",
+            BACKEND + "/bookings",
             {
+                method: "GET",
                 headers: {
                     "Authorization":
-                        "Bearer " +
-                        localStorage.getItem("adminToken")
+                        "Bearer " + adminToken
                 }
             }
         );
 
+        if (!response.ok) {
 
-        const data = await response.json();
+            if (response.status === 401) {
+
+                logout();
+                return;
+
+            }
+
+            throw new Error(
+                "Server returned " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            message.innerText =
+                data.message ||
+                "Unable to load bookings.";
+
+            return;
+        }
 
 
-        const tableBody =
-            document.getElementById("bookingBody");
+        if (data.bookings.length === 0) {
 
-        const message =
-            document.getElementById("message");
+            message.innerText =
+                "No bookings available.";
 
-
-        tableBody.innerHTML = "";
-
-
-        if (data.success) {
-
-            message.innerText = "";
+            return;
+        }
 
 
-            data.bookings.forEach(booking => {
+        message.innerText = "";
+
+
+        data.bookings.forEach(
+            booking => {
 
                 const row =
                     document.createElement("tr");
-
-
-                const currentStatus =
-                    booking.status || "Pending";
 
 
                 row.innerHTML = `
 
                     <td>${booking.id}</td>
 
-                    <td>${booking.name}</td>
+                    <td>${booking.name || ""}</td>
 
-                    <td>${booking.phone}</td>
+                    <td>${booking.phone || ""}</td>
 
-                    <td>${booking.service}</td>
+                    <td>${booking.service || ""}</td>
 
-                    <td>${booking.date}</td>
+                    <td>${booking.date || ""}</td>
 
-                    <td>${booking.location}</td>
+                    <td>${booking.location || ""}</td>
 
                     <td>${booking.request || ""}</td>
 
                     <td>
 
                         <select
-                            onchange="updateStatus(
+                            onchange="
+                            updateStatus(
                                 ${booking.id},
                                 this.value
-                            )"
+                            )
+                            "
                         >
 
                             <option
                                 value="Pending"
-                                ${currentStatus === "Pending" ? "selected" : ""}
+                                ${booking.status === "Pending"
+                                ? "selected"
+                                : ""}
                             >
                                 🟡 Pending
                             </option>
 
                             <option
                                 value="Accepted"
-                                ${currentStatus === "Accepted" ? "selected" : ""}
+                                ${booking.status === "Accepted"
+                                ? "selected"
+                                : ""}
                             >
                                 🟢 Accepted
                             </option>
 
                             <option
                                 value="Completed"
-                                ${currentStatus === "Completed" ? "selected" : ""}
+                                ${booking.status === "Completed"
+                                ? "selected"
+                                : ""}
                             >
                                 🔵 Completed
                             </option>
@@ -724,14 +538,11 @@ async function loadBookings() {
                     <td>
 
                         <button
-                            onclick="deleteBooking(${booking.id})"
-                            style="
-                                background:#dc3545;
-                                color:white;
-                                border:none;
-                                padding:7px 10px;
-                                border-radius:5px;
-                                cursor:pointer;
+                            class="delete-button"
+                            onclick="
+                            deleteBooking(
+                                ${booking.id}
+                            )
                             "
                         >
                             🗑️ Delete
@@ -744,91 +555,69 @@ async function loadBookings() {
 
                 tableBody.appendChild(row);
 
-            });
+            }
+        );
 
+    }
 
-        } else {
+    catch (error) {
 
-            message.innerText =
-                "Unable to load bookings.";
+        console.error(
+            "Booking error:",
+            error
+        );
 
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document.getElementById("message").innerText =
-            "Error connecting to server.";
+        message.innerText =
+            "❌ Could not connect to server.";
 
     }
 
 }
 
 
-/* BOOKING SEARCH */
+/* =========================
+   UPDATE STATUS
+========================= */
 
-document
-    .getElementById("searchBooking")
-    .addEventListener("input", function() {
-
-        const searchText =
-            this.value.toLowerCase();
-
-        const rows =
-            document.querySelectorAll(
-                "#bookingBody tr"
-            );
-
-
-        rows.forEach(row => {
-
-            const rowText =
-                row.innerText.toLowerCase();
-
-            row.style.display =
-                rowText.includes(searchText)
-                    ? ""
-                    : "none";
-
-        });
-
-    });
-
-
-/* UPDATE STATUS */
-
-async function updateStatus(id, status) {
-
-    const token =
-        localStorage.getItem("adminToken");
-
+async function updateStatus(
+    id,
+    status
+) {
 
     try {
 
-        const response = await fetch(
+        const response =
+            await fetch(
+                BACKEND +
+                "/bookings/" +
+                id +
+                "/status",
+                {
+                    method: "PUT",
 
-            "https://call-assistant-backend.onrender.com/bookings/"
-            + id
-            + "/status",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
 
-            {
-                method: "PUT",
+                        "Authorization":
+                            "Bearer " +
+                            adminToken
+                    },
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization":
-                        "Bearer " + token
-                },
+                    body:
+                        JSON.stringify({
+                            status: status
+                        })
+                }
+            );
 
-                body: JSON.stringify({
-                    status: status
-                })
 
-            }
+        if (response.status === 401) {
 
-        );
+            logout();
+            return;
+
+        }
 
 
         const data =
@@ -837,27 +626,42 @@ async function updateStatus(id, status) {
 
         if (data.success) {
 
+            alert(
+                "✅ Status updated successfully!"
+            );
+
+            loadBookings();
             loadStatistics();
-
-        } else {
-
-            alert("Status update failed.");
 
         }
 
+        else {
 
-    } catch (error) {
+            alert(
+                data.message ||
+                "Status update failed."
+            );
+
+        }
+
+    }
+
+    catch (error) {
 
         console.error(error);
 
-        alert("Status update failed.");
+        alert(
+            "❌ Status update failed."
+        );
 
     }
 
 }
 
 
-/* DELETE BOOKING */
+/* =========================
+   DELETE BOOKING
+========================= */
 
 async function deleteBooking(id) {
 
@@ -872,27 +676,31 @@ async function deleteBooking(id) {
     }
 
 
-    const token =
-        localStorage.getItem("adminToken");
-
-
     try {
 
-        const response = await fetch(
+        const response =
+            await fetch(
+                BACKEND +
+                "/bookings/" +
+                id,
+                {
+                    method: "DELETE",
 
-            "https://call-assistant-backend.onrender.com/bookings/"
-            + id,
-
-            {
-                method: "DELETE",
-
-                headers: {
-                    "Authorization":
-                        "Bearer " + token
+                    headers: {
+                        "Authorization":
+                            "Bearer " +
+                            adminToken
+                    }
                 }
-            }
+            );
 
-        );
+
+        if (response.status === 401) {
+
+            logout();
+            return;
+
+        }
 
 
         const data =
@@ -906,113 +714,213 @@ async function deleteBooking(id) {
             );
 
             loadBookings();
-
             loadStatistics();
-
-        } else {
-
-            alert("Delete failed.");
 
         }
 
+        else {
 
-    } catch (error) {
+            alert(
+                data.message ||
+                "Delete failed."
+            );
+
+        }
+
+    }
+
+    catch (error) {
 
         console.error(error);
 
-        alert("Delete failed.");
+        alert(
+            "❌ Delete failed."
+        );
 
     }
 
 }
 
 
-/* LOAD REGISTERED USERS */
+/* =========================
+   SEARCH BOOKINGS
+========================= */
+
+document
+.getElementById("searchBooking")
+.addEventListener(
+    "input",
+    function () {
+
+        const searchText =
+            this.value.toLowerCase();
+
+        const rows =
+            document.querySelectorAll(
+                "#bookingBody tr"
+            );
+
+
+        rows.forEach(
+            row => {
+
+                const rowText =
+                    row.innerText.toLowerCase();
+
+
+                row.style.display =
+                    rowText.includes(
+                        searchText
+                    )
+                    ? ""
+                    : "none";
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================
+   LOAD USERS
+========================= */
 
 async function loadUsers() {
 
+    const userMessage =
+        document.getElementById(
+            "userMessage"
+        );
+
+    const userBody =
+        document.getElementById(
+            "userBody"
+        );
+
+
+    userMessage.innerText =
+        "Loading users...";
+
+    userBody.innerHTML = "";
+
+
     try {
 
-        const response = await fetch(
-            "https://call-assistant-backend.onrender.com/users",
-            {
-                headers: {
-                    "Authorization":
-                        "Bearer " +
-                        localStorage.getItem("adminToken")
+        const response =
+            await fetch(
+                BACKEND + "/users",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " +
+                            adminToken
+                    }
                 }
-            }
-        );
+            );
+
+
+        if (response.status === 401) {
+
+            logout();
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server returned " +
+                response.status
+            );
+
+        }
 
 
         const data =
             await response.json();
 
 
-        const userBody =
-            document.getElementById("userBody");
+        if (!data.success) {
 
-        const userMessage =
-            document.getElementById("userMessage");
+            userMessage.innerText =
+                data.message ||
+                "Unable to load users.";
 
+            return;
 
-        userBody.innerHTML = "";
-
-
-        if (data.success) {
-
-            userMessage.innerText = "";
+        }
 
 
-            data.users.forEach(user => {
+        if (data.users.length === 0) {
+
+            userMessage.innerText =
+                "No registered users.";
+
+            return;
+
+        }
+
+
+        userMessage.innerText = "";
+
+
+        data.users.forEach(
+            user => {
 
                 const row =
-                    document.createElement("tr");
+                    document.createElement(
+                        "tr"
+                    );
 
 
                 row.innerHTML = `
 
                     <td>${user.id}</td>
 
-                    <td>${user.name}</td>
+                    <td>${user.name || ""}</td>
 
-                    <td>${user.email}</td>
+                    <td>${user.email || ""}</td>
 
-                    <td>${user.phone}</td>
+                    <td>${user.phone || ""}</td>
 
                 `;
 
 
                 userBody.appendChild(row);
 
-            });
+            }
+        );
 
+    }
 
-        } else {
+    catch (error) {
 
-            userMessage.innerText =
-                "Unable to load users.";
+        console.error(
+            "Users error:",
+            error
+        );
 
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document.getElementById("userMessage").innerText =
-            "Error connecting to server.";
+        userMessage.innerText =
+            "❌ Could not connect to server.";
 
     }
 
 }
 
 
-/* USER SEARCH */
+/* =========================
+   SEARCH USERS
+========================= */
 
 document
-    .getElementById("searchUsers")
-    .addEventListener("input", function() {
+.getElementById("searchUsers")
+.addEventListener(
+    "input",
+    function () {
 
         const searchText =
             this.value.toLowerCase();
@@ -1023,35 +931,143 @@ document
             );
 
 
-        rows.forEach(row => {
+        rows.forEach(
+            row => {
 
-            const rowText =
-                row.innerText.toLowerCase();
+                const rowText =
+                    row.innerText.toLowerCase();
 
-            row.style.display =
-                rowText.includes(searchText)
+
+                row.style.display =
+                    rowText.includes(
+                        searchText
+                    )
                     ? ""
                     : "none";
 
-        });
+            }
+        );
 
-    });
+    }
+);
 
 
-/* STATISTICS */
+/* =========================
+   STATISTICS
+========================= */
 
 async function loadStatistics() {
 
-    const token =
-        localStorage.getItem("adminToken");
-
-
     try {
 
-        const bookingResponse =
+        const response =
             await fetch(
-                "https://call-assistant-backend.onrender.com/bookings",
+                BACKEND + "/bookings",
                 {
                     headers: {
                         "Authorization":
-                            "Bearer " + token
+                            "Bearer " +
+                            adminToken
+                    }
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            logout();
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (data.success) {
+
+            const bookings =
+                data.bookings;
+
+
+            document
+            .getElementById(
+                "totalBookings"
+            )
+            .innerText =
+                bookings.length;
+
+
+            document
+            .getElementById(
+                "pendingBookings"
+            )
+            .innerText =
+                bookings.filter(
+                    b =>
+                    b.status === "Pending"
+                ).length;
+
+
+            document
+            .getElementById(
+                "acceptedBookings"
+            )
+            .innerText =
+                bookings.filter(
+                    b =>
+                    b.status === "Accepted"
+                ).length;
+
+
+            document
+            .getElementById(
+                "completedBookings"
+            )
+            .innerText =
+                bookings.filter(
+                    b =>
+                    b.status === "Completed"
+                ).length;
+
+        }
+
+
+        const userResponse =
+            await fetch(
+                BACKEND + "/users",
+                {
+                    headers: {
+                        "Authorization":
+                            "Bearer " +
+                            adminToken
+                    }
+                }
+            );
+
+
+        if (userResponse.status === 401) {
+
+            logout();
+            return;
+
+        }
+
+
+        const userData =
+            await userResponse.json();
+
+
+        if (userData.success) {
+
+            document
+            .getElementById(
+                "totalUsers"
+            )
+            .innerText =
+                userData.users.length;
+
+        }
+
+    }
