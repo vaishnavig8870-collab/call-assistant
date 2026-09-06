@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile - Call Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h2>My Profile 👤</h2>
+
+    <div>
+        <p><strong>Name:</strong> <span id="profileName"></span></p>
+        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+    </div>
+
+    <br>
+
+    <button onclick="goToDashboard()">My Bookings</button>
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        const token = localStorage.getItem("userToken");
+
+        if (!token) {
+            window.location.href = "user-login.html";
+        }
+
+        const userName = localStorage.getItem("userName");
+
+        document.getElementById("profileName").innerText =
+            userName || "User";
+
+        async function loadProfile() {
+
+            try {
+
+                const response = await fetch(
+                    "https://call-assistant-backend.onrender.com/user-bookings",
+                    {
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success && data.bookings.length > 0) {
+
+                    const booking = data.bookings[0];
+
+                    document.getElementById("profilePhone").innerText =
+                        booking.phone;
+
+                }
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+        }
+
+        function goToDashboard() {
+            window.location.href = "user-dashboard.html";
+        }
+
+        function logout() {
+
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("userName");
+
+            window.location.href = "user-login.html";
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+</html>
