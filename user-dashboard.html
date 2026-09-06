@@ -128,13 +128,12 @@
     </table>
 
     <div class="dashboard-buttons">
-        <button onclick="goToProfile()">👤 My Profile</button>
-        <button onclick="logout()">🚪 Logout</button>
-    </div>
-
+    <button onclick="bookNewService()">🛎️ Book New Service</button>
+    <button onclick="goToProfile()">👤 My Profile</button>
+    <button onclick="logout()">🚪 Logout</button>
+</div>
 
     <script>
-
         const token = localStorage.getItem("userToken");
 
         if (!token) {
@@ -144,7 +143,9 @@
         document.getElementById("userName").innerText =
             localStorage.getItem("userName") || "User";
 
-
+       function bookNewService() {
+    window.location.href = "booking.html";
+}
         async function loadBookings() {
 
             try {
