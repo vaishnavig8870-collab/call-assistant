@@ -32,7 +32,9 @@
     <button onclick="logout()">Logout</button>
 
     <script>
-
+      function goToProfile() {
+    window.location.href = "profile.html";
+}
         const token = localStorage.getItem("userToken");
 
         if (!token) {
