@@ -1,18 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>User Dashboard</title>
+    <title>User Dashboard - Call Assistant</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fb;
+        }
+
+        .dashboard-header {
+            background: #ff6b00;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .dashboard-header p {
+            margin-bottom: 0;
+        }
+
+        h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #ff6b00;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .dashboard-buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .dashboard-buttons button {
+            background: #ff6b00;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dashboard-buttons button:hover {
+            background: #e85d00;
+        }
+
+        /* STATUS BADGES */
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-accepted {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h2>Welcome, <span id="userName"></span> 👋</h2>
+    <div class="dashboard-header">
+        <h2>Welcome, <span id="userName"></span> 👋</h2>
+        <p>Manage your Call Assistant bookings here.</p>
+    </div>
 
-    <h3>My Bookings</h3>
+    <h3>My Bookings 📋</h3>
 
     <div id="message">Loading bookings...</div>
 
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -27,14 +127,14 @@
         <tbody id="bookingBody"></tbody>
     </table>
 
-    <br>
-    <button onclick="goToProfile()">My Profile</button>
-    <button onclick="logout()">Logout</button>
+    <div class="dashboard-buttons">
+        <button onclick="goToProfile()">👤 My Profile</button>
+        <button onclick="logout()">🚪 Logout</button>
+    </div>
+
 
     <script>
-      function goToProfile() {
-    window.location.href = "profile.html";
-}
+
         const token = localStorage.getItem("userToken");
 
         if (!token) {
@@ -43,6 +143,7 @@
 
         document.getElementById("userName").innerText =
             localStorage.getItem("userName") || "User";
+
 
         async function loadBookings() {
 
@@ -60,8 +161,10 @@
                 const data = await response.json();
 
                 if (!data.success) {
+
                     document.getElementById("message").innerText =
                         "Could not load bookings.";
+
                     return;
                 }
 
@@ -70,17 +173,29 @@
 
                 document.getElementById("message").innerText = "";
 
+                tableBody.innerHTML = "";
+
+
                 data.bookings.forEach(booking => {
 
                     const row = document.createElement("tr");
 
                     row.innerHTML = `
                         <td>${booking.id}</td>
+
                         <td>${booking.service}</td>
+
                         <td>${booking.date}</td>
+
                         <td>${booking.location}</td>
+
                         <td>${booking.request}</td>
-                        <td>${booking.status}</td>
+
+                        <td>
+                            <span class="status-badge status-${booking.status.toLowerCase()}">
+                                ${booking.status}
+                            </span>
+                        </td>
                     `;
 
                     tableBody.appendChild(row);
@@ -98,18 +213,29 @@
 
         }
 
+
+        function goToProfile() {
+
+            window.location.href = "profile.html";
+
+        }
+
+
         function logout() {
 
             localStorage.removeItem("userToken");
             localStorage.removeItem("userName");
+            localStorage.removeItem("userEmail");
 
             window.location.href = "user-login.html";
 
         }
+
 
         loadBookings();
 
     </script>
 
 </body>
+
 </html>
