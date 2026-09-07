@@ -29,8 +29,6 @@
             color: #333;
         }
 
-        /* TOP BUTTONS */
-
         .top-buttons {
             text-align: center;
             margin: 20px 0;
@@ -51,8 +49,6 @@
         .top-buttons button:hover {
             background: #e85d00;
         }
-
-        /* STATISTICS */
 
         #stats {
             display: flex;
@@ -79,15 +75,11 @@
             color: #ff6b00;
         }
 
-        /* MESSAGES */
-
         .message {
             text-align: center;
             margin: 20px 0;
             font-size: 17px;
         }
-
-        /* SEARCH */
 
         .search-box {
             width: 90%;
@@ -99,8 +91,6 @@
             border-radius: 8px;
             font-size: 16px;
         }
-
-        /* TABLE */
 
         .table-container {
             width: 100%;
@@ -135,16 +125,12 @@
             background: #f9f9f9;
         }
 
-        /* STATUS SELECT */
-
         select {
             padding: 7px;
             border-radius: 6px;
             border: 1px solid #ccc;
             cursor: pointer;
         }
-
-        /* DELETE BUTTON */
 
         .delete-button {
             background: #dc3545;
@@ -158,8 +144,6 @@
         .delete-button:hover {
             background: #bb2d3b;
         }
-
-        /* MOBILE */
 
         @media (max-width: 600px) {
 
@@ -210,6 +194,7 @@
 <body>
 
     <h1>📋 Call Assistant - Admin Dashboard</h1>
+
 
     <!-- STATISTICS -->
 
@@ -292,7 +277,7 @@
 
     <div class="table-container">
 
-        <table id="bookingTable">
+        <table>
 
             <thead>
 
@@ -336,7 +321,7 @@
 
     <div class="table-container">
 
-        <table id="userTable">
+        <table>
 
             <thead>
 
@@ -363,11 +348,16 @@ const BACKEND =
 
 
 /* =========================
-   CHECK ADMIN LOGIN
+   ADMIN TOKEN
 ========================= */
 
 const adminToken =
     localStorage.getItem("adminToken");
+
+
+/* =========================
+   CHECK LOGIN
+========================= */
 
 if (!adminToken) {
 
@@ -395,7 +385,8 @@ function logout() {
 
 function newBooking() {
 
-    window.location.href = "index.html#booking";
+    window.location.href =
+        "https://vaishnavig8870-collab.github.io/call-assistant/#booking";
 
 }
 
@@ -415,38 +406,49 @@ async function loadBookings() {
     message.innerText =
         "Loading bookings...";
 
-    tableBody.innerHTML = "";
-
     try {
 
-        const response = await fetch(
-            BACKEND + "/bookings",
-            {
-                method: "GET",
-                headers: {
-                    "Authorization":
-                        "Bearer " + adminToken
+        const response =
+            await fetch(
+                BACKEND + "/bookings",
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization":
+                            "Bearer " + adminToken
+                    }
                 }
-            }
-        );
+            );
+
+
+        if (response.status === 401) {
+
+            message.innerText =
+                "Session expired. Please login again.";
+
+            setTimeout(function() {
+
+                logout();
+
+            }, 1500);
+
+            return;
+        }
+
 
         if (!response.ok) {
 
-            if (response.status === 401) {
-
-                logout();
-                return;
-
-            }
-
             throw new Error(
-                "Server returned " +
+                "Server error: " +
                 response.status
             );
+
         }
+
 
         const data =
             await response.json();
+
 
         if (!data.success) {
 
@@ -455,15 +457,23 @@ async function loadBookings() {
                 "Unable to load bookings.";
 
             return;
+
         }
 
 
-        if (data.bookings.length === 0) {
+        tableBody.innerHTML = "";
+
+
+        if (!data.bookings ||
+            data.bookings.length === 0) {
 
             message.innerText =
                 "No bookings available.";
 
+            updateBookingStatistics([]);
+
             return;
+
         }
 
 
@@ -471,10 +481,15 @@ async function loadBookings() {
 
 
         data.bookings.forEach(
-            booking => {
+            function(booking) {
 
                 const row =
                     document.createElement("tr");
+
+
+                const status =
+                    booking.status ||
+                    "Pending";
 
 
                 row.innerHTML = `
@@ -496,17 +511,12 @@ async function loadBookings() {
                     <td>
 
                         <select
-                            onchange="
-                            updateStatus(
-                                ${booking.id},
-                                this.value
-                            )
-                            "
+                            onchange="updateStatus(${booking.id}, this.value)"
                         >
 
                             <option
                                 value="Pending"
-                                ${booking.status === "Pending"
+                                ${status === "Pending"
                                 ? "selected"
                                 : ""}
                             >
@@ -515,7 +525,7 @@ async function loadBookings() {
 
                             <option
                                 value="Accepted"
-                                ${booking.status === "Accepted"
+                                ${status === "Accepted"
                                 ? "selected"
                                 : ""}
                             >
@@ -524,7 +534,7 @@ async function loadBookings() {
 
                             <option
                                 value="Completed"
-                                ${booking.status === "Completed"
+                                ${status === "Completed"
                                 ? "selected"
                                 : ""}
                             >
@@ -539,11 +549,7 @@ async function loadBookings() {
 
                         <button
                             class="delete-button"
-                            onclick="
-                            deleteBooking(
-                                ${booking.id}
-                            )
-                            "
+                            onclick="deleteBooking(${booking.id})"
                         >
                             🗑️ Delete
                         </button>
@@ -556,6 +562,11 @@ async function loadBookings() {
                 tableBody.appendChild(row);
 
             }
+        );
+
+
+        updateBookingStatistics(
+            data.bookings
         );
 
     }
@@ -571,6 +582,53 @@ async function loadBookings() {
             "❌ Could not connect to server.";
 
     }
+
+}
+
+
+/* =========================
+   BOOKING STATISTICS
+========================= */
+
+function updateBookingStatistics(
+    bookings
+) {
+
+    document.getElementById(
+        "totalBookings"
+    ).innerText =
+        bookings.length;
+
+
+    document.getElementById(
+        "pendingBookings"
+    ).innerText =
+        bookings.filter(
+            function(b) {
+                return (b.status || "Pending")
+                    === "Pending";
+            }
+        ).length;
+
+
+    document.getElementById(
+        "acceptedBookings"
+    ).innerText =
+        bookings.filter(
+            function(b) {
+                return b.status === "Accepted";
+            }
+        ).length;
+
+
+    document.getElementById(
+        "completedBookings"
+    ).innerText =
+        bookings.filter(
+            function(b) {
+                return b.status === "Completed";
+            }
+        ).length;
 
 }
 
@@ -631,7 +689,6 @@ async function updateStatus(
             );
 
             loadBookings();
-            loadStatistics();
 
         }
 
@@ -663,7 +720,9 @@ async function updateStatus(
    DELETE BOOKING
 ========================= */
 
-async function deleteBooking(id) {
+async function deleteBooking(
+    id
+) {
 
     const confirmDelete =
         confirm(
@@ -714,7 +773,6 @@ async function deleteBooking(id) {
             );
 
             loadBookings();
-            loadStatistics();
 
         }
 
@@ -743,46 +801,6 @@ async function deleteBooking(id) {
 
 
 /* =========================
-   SEARCH BOOKINGS
-========================= */
-
-document
-.getElementById("searchBooking")
-.addEventListener(
-    "input",
-    function () {
-
-        const searchText =
-            this.value.toLowerCase();
-
-        const rows =
-            document.querySelectorAll(
-                "#bookingBody tr"
-            );
-
-
-        rows.forEach(
-            row => {
-
-                const rowText =
-                    row.innerText.toLowerCase();
-
-
-                row.style.display =
-                    rowText.includes(
-                        searchText
-                    )
-                    ? ""
-                    : "none";
-
-            }
-        );
-
-    }
-);
-
-
-/* =========================
    LOAD USERS
 ========================= */
 
@@ -801,8 +819,6 @@ async function loadUsers() {
 
     userMessage.innerText =
         "Loading users...";
-
-    userBody.innerHTML = "";
 
 
     try {
@@ -824,7 +840,15 @@ async function loadUsers() {
 
         if (response.status === 401) {
 
-            logout();
+            userMessage.innerText =
+                "Session expired. Please login again.";
+
+            setTimeout(function() {
+
+                logout();
+
+            }, 1500);
+
             return;
 
         }
@@ -833,7 +857,7 @@ async function loadUsers() {
         if (!response.ok) {
 
             throw new Error(
-                "Server returned " +
+                "Server error: " +
                 response.status
             );
 
@@ -855,10 +879,18 @@ async function loadUsers() {
         }
 
 
-        if (data.users.length === 0) {
+        userBody.innerHTML = "";
+
+
+        if (!data.users ||
+            data.users.length === 0) {
 
             userMessage.innerText =
                 "No registered users.";
+
+            document.getElementById(
+                "totalUsers"
+            ).innerText = "0";
 
             return;
 
@@ -869,12 +901,10 @@ async function loadUsers() {
 
 
         data.users.forEach(
-            user => {
+            function(user) {
 
                 const row =
-                    document.createElement(
-                        "tr"
-                    );
+                    document.createElement("tr");
 
 
                 row.innerHTML = `
@@ -895,6 +925,12 @@ async function loadUsers() {
             }
         );
 
+
+        document.getElementById(
+            "totalUsers"
+        ).innerText =
+            data.users.length;
+
     }
 
     catch (error) {
@@ -913,35 +949,32 @@ async function loadUsers() {
 
 
 /* =========================
-   SEARCH USERS
+   SEARCH BOOKINGS
 ========================= */
 
 document
-.getElementById("searchUsers")
+.getElementById("searchBooking")
 .addEventListener(
     "input",
-    function () {
+    function() {
 
         const searchText =
             this.value.toLowerCase();
 
         const rows =
             document.querySelectorAll(
-                "#userBody tr"
+                "#bookingBody tr"
             );
 
 
         rows.forEach(
-            row => {
+            function(row) {
 
                 const rowText =
                     row.innerText.toLowerCase();
 
-
                 row.style.display =
-                    rowText.includes(
-                        searchText
-                    )
+                    rowText.includes(searchText)
                     ? ""
                     : "none";
 
@@ -953,121 +986,52 @@ document
 
 
 /* =========================
-   STATISTICS
+   SEARCH USERS
 ========================= */
 
-async function loadStatistics() {
+document
+.getElementById("searchUsers")
+.addEventListener(
+    "input",
+    function() {
 
-    try {
+        const searchText =
+            this.value.toLowerCase();
 
-        const response =
-            await fetch(
-                BACKEND + "/bookings",
-                {
-                    headers: {
-                        "Authorization":
-                            "Bearer " +
-                            adminToken
-                    }
-                }
+        const rows =
+            document.querySelectorAll(
+                "#userBody tr"
             );
 
 
-        if (response.status === 401) {
+        rows.forEach(
+            function(row) {
 
-            logout();
-            return;
+                const rowText =
+                    row.innerText.toLowerCase();
 
-        }
+                row.style.display =
+                    rowText.includes(searchText)
+                    ? ""
+                    : "none";
 
-
-        const data =
-            await response.json();
-
-
-        if (data.success) {
-
-            const bookings =
-                data.bookings;
-
-
-            document
-            .getElementById(
-                "totalBookings"
-            )
-            .innerText =
-                bookings.length;
-
-
-            document
-            .getElementById(
-                "pendingBookings"
-            )
-            .innerText =
-                bookings.filter(
-                    b =>
-                    b.status === "Pending"
-                ).length;
-
-
-            document
-            .getElementById(
-                "acceptedBookings"
-            )
-            .innerText =
-                bookings.filter(
-                    b =>
-                    b.status === "Accepted"
-                ).length;
-
-
-            document
-            .getElementById(
-                "completedBookings"
-            )
-            .innerText =
-                bookings.filter(
-                    b =>
-                    b.status === "Completed"
-                ).length;
-
-        }
-
-
-        const userResponse =
-            await fetch(
-                BACKEND + "/users",
-                {
-                    headers: {
-                        "Authorization":
-                            "Bearer " +
-                            adminToken
-                    }
-                }
-            );
-
-
-        if (userResponse.status === 401) {
-
-            logout();
-            return;
-
-        }
-
-
-        const userData =
-            await userResponse.json();
-
-
-        if (userData.success) {
-
-            document
-            .getElementById(
-                "totalUsers"
-            )
-            .innerText =
-                userData.users.length;
-
-        }
+            }
+        );
 
     }
+);
+
+
+/* =========================
+   START DASHBOARD
+========================= */
+
+loadBookings();
+
+loadUsers();
+
+
+</script>
+
+</body>
+</html>
