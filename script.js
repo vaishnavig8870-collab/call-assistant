@@ -1,4 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // AUTO-FILL LOGGED-IN USER DETAILS
+    const userToken = localStorage.getItem("userToken");
+
+    if (userToken) {
+        try {
+            const payload = JSON.parse(
+                atob(userToken.split(".")[1])
+            );
+
+            if (payload.name) {
+                document.getElementById("name").value = payload.name;
+            }
+
+            if (payload.phone) {
+                document.getElementById("phone").value = payload.phone;
+            }
+
+        } catch (error) {
+            console.error("Could not read user details:", error);
+        }
+    }
 
     // MOBILE MENU
     const menuButton = document.getElementById("menuButton");
