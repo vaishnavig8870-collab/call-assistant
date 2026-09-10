@@ -486,7 +486,26 @@
             alt="WhatsApp"
         >
     </a>
+<script>
+    const loggedInUser = localStorage.getItem("userToken");
 
+    if (loggedInUser) {
+        const menu = document.getElementById("mobileMenu");
+
+        menu.innerHTML += `
+            <a href="user-dashboard.html">My Dashboard</a>
+            <a href="#" onclick="userLogout()">Logout</a>
+        `;
+    }
+
+    function userLogout() {
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+
+        window.location.href = "index.html";
+    }
+</script>
 
     <!-- JAVASCRIPT -->
     <script src="script.js"></script>
