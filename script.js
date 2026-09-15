@@ -1,4 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    // PREVENT PAST DATES
+    const dateInput = document.getElementById("date");
+
+    if (dateInput) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        dateInput.min = `${year}-${month}-${day}`;
+    }
+
+
     // AUTO-FILL LOGGED-IN USER DETAILS
     const userToken = localStorage.getItem("userToken");
 
@@ -21,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
     // MOBILE MENU
     const menuButton = document.getElementById("menuButton");
     const mobileMenu = document.getElementById("mobileMenu");
@@ -30,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             mobileMenu.classList.toggle("active");
         });
     }
+
 
     // BOOKING FORM
     const bookingForm = document.getElementById("bookingForm");
