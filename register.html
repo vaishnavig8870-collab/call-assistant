@@ -271,10 +271,34 @@
 
                 const date_of_birth =
                     document.getElementById("date_of_birth").value;
-                alert("DOB: " + date_of_birth);
-
+                                
                 const password =
                     document.getElementById("password").value;
+           
+               const birthDate = new Date(date_of_birth);
+const today = new Date();
+
+let age = today.getFullYear() - birthDate.getFullYear();
+
+const monthDifference =
+    today.getMonth() - birthDate.getMonth();
+
+if (
+    monthDifference < 0 ||
+    (monthDifference === 0 &&
+        today.getDate() < birthDate.getDate())
+) {
+    age--;
+}
+
+if (age < 18) {
+    message.textContent =
+        "You must be 18 years or older to create an account.";
+
+    message.style.color = "red";
+
+    return;
+}
 
 
                 message.textContent = "Creating account...";
